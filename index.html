@@ -154,7 +154,7 @@
 
   <div id="customizationMenu">
 
-    <!-- Randomize & Grid Toggle -->
+    <!-- RANDOMIZE Button and Grid Toggle -->
     <div style="margin:10px;">
       <button id="randomizeBtn">RANDOMIZE</button>
       <label style="margin-left:10px;">
@@ -306,6 +306,57 @@
     canvas.width = canvasSize*16;
     canvas.height = canvasSize*16;
     ctx.clearRect(0,0,canvas.width,canvas.height);
+
+    // Draw grid if enabled
+    if(showGrid){
+      ctx.strokeStyle = "rgba(0,0,0,0.2)";
+      ctx.lineWidth = 1;
+      const pixelSize = canvas.width / canvasSize;
+      for(let i=0;i<=canvasSize;i++){
+        ctx.beginPath();
+        ctx.moveTo(i*pixelSize,0);
+        ctx.lineTo(i*pixelSize,canvas.height);
+        ctx.stroke();
+      }
+      for(let j=0;j<=canvasSize;j++){
+        ctx.beginPath();
+        ctx.moveTo(0,j*pixelSize);
+        ctx.lineTo(canvas.width,j*pixelSize);
+        ctx.stroke();
+      }
+    }
+
+    // Draw body
+    const bodyImg = new Image();
+    bodyImg.src = assets.body[selected.body];
+    bodyImg.onload = ()=>{
+      ctx.drawImage(bodyImg,0,0,canvas.width,canvas.height);
+
+      // Draw other layers
+      ['hair','eyes','top','pants','accessories'].forEach(layer=>{
+        const img = new Image();
+        img.src = assets[layer][selected[layer]];
+        img.onload = ()=>{ctx.drawImage(img,0,0,canvas.width,canvas.height);}
+      });
+    };
+
+    updateHighlights();
+  }
+
+  // Download
+  function downloadCharacter(){
+    const canvas = document.getElementById('pixelCanvas');
+    const link = document.createElement('a');
+    link.download = 'pixgen_character.png';
+    link.href = canvas.toDataURL();
+    link.click();
+  }
+
+  // Initial draw
+  window.onload = drawCharacter;
+</script>
+</body>
+</html> ctx.clearRect(0,0,canvas.width,canvas.height);
 
     // Draw grid if enabled
     if(showGrid){
