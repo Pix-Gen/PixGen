@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>PIXGEN v2.4</title>
+  <title>PIXGEN v2.3 - Step Flow</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link href="https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@700&display=swap" rel="stylesheet">
   <style>
@@ -67,8 +67,6 @@
       display: flex;
       align-items: center;
       margin: 5px 0;
-      width: 100%;
-      max-width: 360px;
     }
 
     .menu-row label {
@@ -78,28 +76,12 @@
       margin-right: 5px;
     }
 
-    .options-container {
-      display: flex;
-      overflow-x: auto;
-      gap: 8px;
-      padding: 5px;
-      scroll-behavior: smooth;
-    }
-
-    .options-container::-webkit-scrollbar {
-      height: 6px;
-    }
-
-    .options-container::-webkit-scrollbar-thumb {
-      background: #00ffff;
-      border-radius: 10px;
-    }
-
-    .option-btn {
+    .menu-row .option-btn {
       width: 35px;
       height: 35px;
       background: white;
       border: 3px solid black;
+      margin: 0 2px;
       cursor: pointer;
       flex-shrink: 0;
     }
@@ -127,7 +109,7 @@
         width: 60px;
         font-size: 0.9em;
       }
-      .option-btn {
+      .menu-row .option-btn {
         width: 30px;
         height: 30px;
       }
@@ -181,33 +163,63 @@
     </div>
 
     <!-- HAIR -->
-    <div class="menu-row">
+    <div class="menu-row" id="hairRow">
       <label>HAIR</label>
-      <div class="options-container" id="hairRow"></div>
+      <div class="option-btn" onclick="selectOption('hair',0)"></div>
+      <div class="option-btn" onclick="selectOption('hair',1)"></div>
+      <div class="option-btn" onclick="selectOption('hair',2)"></div>
+      <div class="option-btn" onclick="selectOption('hair',3)"></div>
+      <div class="option-btn" onclick="selectOption('hair',4)"></div>
+      <div class="option-btn" onclick="selectOption('hair',5)"></div>
+      <div class="option-btn" onclick="selectOption('hair',6)"></div>
     </div>
 
     <!-- EYES -->
-    <div class="menu-row">
+    <div class="menu-row" id="eyesRow">
       <label>EYES</label>
-      <div class="options-container" id="eyesRow"></div>
+      <div class="option-btn" onclick="selectOption('eyes',0)"></div>
+      <div class="option-btn" onclick="selectOption('eyes',1)"></div>
+      <div class="option-btn" onclick="selectOption('eyes',2)"></div>
+      <div class="option-btn" onclick="selectOption('eyes',3)"></div>
+      <div class="option-btn" onclick="selectOption('eyes',4)"></div>
+      <div class="option-btn" onclick="selectOption('eyes',5)"></div>
+      <div class="option-btn" onclick="selectOption('eyes',6)"></div>
     </div>
 
     <!-- TOP -->
-    <div class="menu-row">
+    <div class="menu-row" id="topRow">
       <label>TOP</label>
-      <div class="options-container" id="topRow"></div>
+      <div class="option-btn" onclick="selectOption('top',0)"></div>
+      <div class="option-btn" onclick="selectOption('top',1)"></div>
+      <div class="option-btn" onclick="selectOption('top',2)"></div>
+      <div class="option-btn" onclick="selectOption('top',3)"></div>
+      <div class="option-btn" onclick="selectOption('top',4)"></div>
+      <div class="option-btn" onclick="selectOption('top',5)"></div>
+      <div class="option-btn" onclick="selectOption('top',6)"></div>
     </div>
 
     <!-- PANTS -->
-    <div class="menu-row">
+    <div class="menu-row" id="pantsRow">
       <label>PANTS</label>
-      <div class="options-container" id="pantsRow"></div>
+      <div class="option-btn" onclick="selectOption('pants',0)"></div>
+      <div class="option-btn" onclick="selectOption('pants',1)"></div>
+      <div class="option-btn" onclick="selectOption('pants',2)"></div>
+      <div class="option-btn" onclick="selectOption('pants',3)"></div>
+      <div class="option-btn" onclick="selectOption('pants',4)"></div>
+      <div class="option-btn" onclick="selectOption('pants',5)"></div>
+      <div class="option-btn" onclick="selectOption('pants',6)"></div>
     </div>
 
     <!-- ETC / ACCESSORIES -->
-    <div class="menu-row">
+    <div class="menu-row" id="etcRow">
       <label>ETC</label>
-      <div class="options-container" id="accessoriesRow"></div>
+      <div class="option-btn" onclick="selectOption('accessories',0)"></div>
+      <div class="option-btn" onclick="selectOption('accessories',1)"></div>
+      <div class="option-btn" onclick="selectOption('accessories',2)"></div>
+      <div class="option-btn" onclick="selectOption('accessories',3)"></div>
+      <div class="option-btn" onclick="selectOption('accessories',4)"></div>
+      <div class="option-btn" onclick="selectOption('accessories',5)"></div>
+      <div class="option-btn" onclick="selectOption('accessories',6)"></div>
     </div>
 
     <button id="drawBtn" onclick="drawCharacter()">DRAW CHARACTER</button>
@@ -237,11 +249,11 @@
   // Assets
   const assets = {
     body: ['assets/body/body1.png','assets/body/body2.png','assets/body/body3.png'],
-    hair: Array.from({length:12},(_,i)=>`assets/hair/hair${i+1}.png`),
-    eyes: Array.from({length:12},(_,i)=>`assets/eyes/eyes${i+1}.png`),
-    top: Array.from({length:12},(_,i)=>`assets/top/top${i+1}.png`),
-    pants: Array.from({length:12},(_,i)=>`assets/pants/pants${i+1}.png`),
-    accessories: Array.from({length:12},(_,i)=>`assets/accessories/acc${i+1}.png`)
+    hair: ['assets/hair/hair1.png','assets/hair/hair2.png','assets/hair/hair3.png','assets/hair/hair4.png','assets/hair/hair5.png','assets/hair/hair6.png','assets/hair/hair7.png'],
+    eyes: ['assets/eyes/eyes1.png','assets/eyes/eyes2.png','assets/eyes/eyes3.png','assets/eyes/eyes4.png','assets/eyes/eyes5.png','assets/eyes/eyes6.png','assets/eyes/eyes7.png'],
+    top: ['assets/top/top1.png','assets/top/top2.png','assets/top/top3.png','assets/top/top4.png','assets/top/top5.png','assets/top/top6.png','assets/top/top7.png'],
+    pants: ['assets/pants/pants1.png','assets/pants/pants2.png','assets/pants/pants3.png','assets/pants/pants4.png','assets/pants/pants5.png','assets/pants/pants6.png','assets/pants/pants7.png'],
+    accessories: ['assets/accessories/acc1.png','assets/accessories/acc2.png','assets/accessories/acc3.png','assets/accessories/acc4.png','assets/accessories/acc5.png','assets/accessories/acc6.png','assets/accessories/acc7.png']
   };
 
   // Highlight selected
@@ -286,18 +298,6 @@
     showGrid = this.checked;
     drawCharacter();
   });
-
-  // Generate option buttons dynamically
-  function generateOptions(layer) {
-    const row = document.getElementById(layer + "Row");
-    row.innerHTML = "";
-    assets[layer].forEach((_, index) => {
-      const btn = document.createElement("div");
-      btn.classList.add("option-btn");
-      btn.onclick = () => selectOption(layer, index);
-      row.appendChild(btn);
-    });
-  }
 
   // Draw character
   function drawCharacter(){
@@ -352,15 +352,8 @@
     link.click();
   }
 
-  // Initialize
-  window.onload = function(){
-    generateOptions("hair");
-    generateOptions("eyes");
-    generateOptions("top");
-    generateOptions("pants");
-    generateOptions("accessories");
-    drawCharacter();
-  }
+  // Initial draw
+  window.onload = drawCharacter;
 </script>
 </body>
 </html>
