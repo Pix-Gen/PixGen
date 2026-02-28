@@ -1,55 +1,124 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>PixGen</title>
+  <title>PixGen - Character Creator</title>
   <style>
     body {
       background: #111;
       color: white;
-      text-align: center;
       font-family: Arial;
+      text-align: center;
     }
 
     canvas {
       border: 2px solid white;
-      margin-top: 20px;
       image-rendering: pixelated;
+      margin-top: 20px;
     }
 
-    button {
-      margin-top: 20px;
-      padding: 10px 20px;
-      background: #00ffcc;
-      border: none;
-      cursor: pointer;
+    select, button {
+      margin: 10px;
+      padding: 5px 10px;
       font-weight: bold;
+    }
+
+    #controls {
+      margin-top: 20px;
     }
   </style>
 </head>
 <body>
 
-  <h1>PixGen 🎨</h1>
-  <p>Create your pixel character now!</p>
-  <button onclick="generate()">Generate Pixel Art</button>
+  <h1>PixGen Character Creator</h1>
+
+  <div id="controls">
+    <label>Body:</label>
+    <select id="bodySelect"></select>
+
+    <label>Hair:</label>
+    <select id="hairSelect"></select>
+
+    <label>Eyes:</label>
+    <select id="eyesSelect"></select>
+
+    <label>Mouth:</label>
+    <select id="mouthSelect"></select>
+
+    <label>Clothes:</label>
+    <select id="clothesSelect"></select>
+  </div>
+
+  <button onclick="drawCharacter()">Draw Character</button>
+  <button onclick="downloadCharacter()">Download PNG</button>
 
   <br>
   <canvas id="pixelCanvas" width="256" height="256"></canvas>
 
   <script>
-    function generate() {
-      const canvas = document.getElementById("pixelCanvas");
-      const ctx = canvas.getContext("2d");
+    // Layer image paths
+    const assets = {
+      body: ['assets/body/body1.png','assets/body/body2.png'],
+      hair: ['assets/hair/hair1.png','assets/hair/hair2.png'],
+      eyes: ['assets/eyes/eyes1.png','assets/eyes/eyes2.png'],
+      mouth: ['assets/mouth/mouth1.png','assets/mouth/mouth2.png'],
+      clothes: ['assets/clothes/clothes1.png','assets/clothes/clothes2.png']
+    };
 
-      const size = 16;
-      const pixelSize = 16;
+    const selects = {
+      body: document.getElementById('bodySelect'),
+      hair: document.getElementById('hairSelect'),
+      eyes: document.getElementById('eyesSelect'),
+      mouth: document.getElementById('mouthSelect'),
+      clothes: document.getElementById('clothesSelect')
+    };
 
-      for (let x = 0; x < size; x++) {
-        for (let y = 0; y < size; y++) {
-          ctx.fillStyle = `hsl(${Math.random() * 360}, 70%, 50%)`;
-          ctx.fillRect(x * pixelSize, y * pixelSize, pixelSize, pixelSize);
-        }
-      }
+    // Populate dropdowns
+    for (let layer in assets) {
+      assets[layer].forEach((path, index) => {
+        const option = document.createElement('option');
+        option.value = index;
+        option.text = `${layer} ${index+1}`;
+        selects[layer].appendChild(option);
+      });
     }
+
+    function drawCharacter() {
+      const canvas = document.getElementById('pixelCanvas');
+      const ctx = canvas.getContext('2d');
+      ctx.clearRect(0,0,canvas.width,canvas.height);
+
+      const selectedIndices = {
+        body: selects.body.value,
+        hair: selects.hair.value,
+        eyes: selects.eyes.value,
+        mouth: selects.mouth.value,
+        clothes: selects.clothes.value
+      };
+
+      // Load images in order
+      const layers = ['body','clothes','hair','eyes','mouth'];
+      let loaded = 0;
+
+      layers.forEach(layer => {
+        const img = new Image();
+        img.src = assets[layer][selectedIndices[layer]];
+        img.onload = () => {
+          ctx.drawImage(img,0,0,256,256);
+          loaded++;
+        }
+      });
+    }
+
+    function downloadCharacter() {
+      const canvas = document.getElementById('pixelCanvas');
+      const link = document.createElement('a');
+      link.download = 'pixgen_character.png';
+      link.href = canvas.toDataURL();
+      link.click();
+    }
+
+    // Draw default character on load
+    window.onload = drawCharacter;
   </script>
 
 </body>
