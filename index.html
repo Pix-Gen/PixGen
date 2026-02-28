@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>PIXGEN v2.3 - Step Flow</title>
+  <title>PIXGEN v2.4</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link href="https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@700&display=swap" rel="stylesheet">
   <style>
@@ -67,6 +67,8 @@
       display: flex;
       align-items: center;
       margin: 5px 0;
+      width: 100%;
+      max-width: 360px;
     }
 
     .menu-row label {
@@ -76,12 +78,28 @@
       margin-right: 5px;
     }
 
-    .menu-row .option-btn {
+    .options-container {
+      display: flex;
+      overflow-x: auto;
+      gap: 8px;
+      padding: 5px;
+      scroll-behavior: smooth;
+    }
+
+    .options-container::-webkit-scrollbar {
+      height: 6px;
+    }
+
+    .options-container::-webkit-scrollbar-thumb {
+      background: #00ffff;
+      border-radius: 10px;
+    }
+
+    .option-btn {
       width: 35px;
       height: 35px;
       background: white;
       border: 3px solid black;
-      margin: 0 2px;
       cursor: pointer;
       flex-shrink: 0;
     }
@@ -109,7 +127,7 @@
         width: 60px;
         font-size: 0.9em;
       }
-      .menu-row .option-btn {
+      .option-btn {
         width: 30px;
         height: 30px;
       }
@@ -163,33 +181,186 @@
     </div>
 
     <!-- HAIR -->
-    <div class="menu-row" id="hairRow">
+    <div class="menu-row">
       <label>HAIR</label>
-      <div class="option-btn" onclick="selectOption('hair',0)"></div>
-      <div class="option-btn" onclick="selectOption('hair',1)"></div>
-      <div class="option-btn" onclick="selectOption('hair',2)"></div>
-      <div class="option-btn" onclick="selectOption('hair',3)"></div>
-      <div class="option-btn" onclick="selectOption('hair',4)"></div>
-      <div class="option-btn" onclick="selectOption('hair',5)"></div>
-      <div class="option-btn" onclick="selectOption('hair',6)"></div>
+      <div class="options-container" id="hairRow"></div>
     </div>
 
     <!-- EYES -->
-    <div class="menu-row" id="eyesRow">
+    <div class="menu-row">
       <label>EYES</label>
-      <div class="option-btn" onclick="selectOption('eyes',0)"></div>
-      <div class="option-btn" onclick="selectOption('eyes',1)"></div>
-      <div class="option-btn" onclick="selectOption('eyes',2)"></div>
-      <div class="option-btn" onclick="selectOption('eyes',3)"></div>
-      <div class="option-btn" onclick="selectOption('eyes',4)"></div>
-      <div class="option-btn" onclick="selectOption('eyes',5)"></div>
-      <div class="option-btn" onclick="selectOption('eyes',6)"></div>
+      <div class="options-container" id="eyesRow"></div>
     </div>
 
     <!-- TOP -->
-    <div class="menu-row" id="topRow">
+    <div class="menu-row">
       <label>TOP</label>
-      <div class="option-btn" onclick="selectOption('top',0)"></div>
-      <div class="option-btn" onclick="selectOption('top',1)"></div>
-      <div class="option-btn" onclick="selectOption('top',2)"></div>
-      <div class="
+      <div class="options-container" id="topRow"></div>
+    </div>
+
+    <!-- PANTS -->
+    <div class="menu-row">
+      <label>PANTS</label>
+      <div class="options-container" id="pantsRow"></div>
+    </div>
+
+    <!-- ETC / ACCESSORIES -->
+    <div class="menu-row">
+      <label>ETC</label>
+      <div class="options-container" id="accessoriesRow"></div>
+    </div>
+
+    <button id="drawBtn" onclick="drawCharacter()">DRAW CHARACTER</button>
+    <button id="downloadBtn" onclick="downloadCharacter()">DOWNLOAD</button>
+  </div>
+</div>
+
+<script>
+  // Step navigation
+  let currentStep = 1;
+  function nextStep(step){
+    document.getElementById('step'+step).classList.remove('active');
+    currentStep = step+1;
+    document.getElementById('step'+currentStep).classList.add('active');
+  }
+
+  // Canvas size
+  let canvasSize = parseInt(document.getElementById('canvasSizeSelect').value);
+  document.getElementById('canvasSizeSelect').addEventListener('change', function(){
+    canvasSize = parseInt(this.value);
+    drawCharacter();
+  });
+
+  // Selected indices
+  const selected = {hair:0, eyes:0, top:0, pants:0, accessories:0, body:0};
+
+  // Assets
+  const assets = {
+    body: ['assets/body/body1.png','assets/body/body2.png','assets/body/body3.png'],
+    hair: Array.from({length:12},(_,i)=>`assets/hair/hair${i+1}.png`),
+    eyes: Array.from({length:12},(_,i)=>`assets/eyes/eyes${i+1}.png`),
+    top: Array.from({length:12},(_,i)=>`assets/top/top${i+1}.png`),
+    pants: Array.from({length:12},(_,i)=>`assets/pants/pants${i+1}.png`),
+    accessories: Array.from({length:12},(_,i)=>`assets/accessories/acc${i+1}.png`)
+  };
+
+  // Highlight selected
+  function updateHighlights() {
+    const layers = ['hair','eyes','top','pants','accessories'];
+    layers.forEach(layer=>{
+      const row = document.getElementById(layer+'Row');
+      const buttons = row.getElementsByClassName('option-btn');
+      for(let i=0;i<buttons.length;i++){
+        if(i===selected[layer]){
+          buttons[i].style.borderColor = '#00ffff';
+          buttons[i].style.borderWidth = '4px';
+        } else {
+          buttons[i].style.borderColor = 'black';
+          buttons[i].style.borderWidth = '3px';
+        }
+      }
+    });
+  }
+
+  function selectOption(layer,index){
+    selected[layer] = index;
+    drawCharacter();
+    updateHighlights();
+  }
+
+  // Randomize
+  document.getElementById('randomizeBtn').addEventListener('click', ()=>{
+    selected.body = Math.floor(Math.random()*assets.body.length);
+    selected.hair = Math.floor(Math.random()*assets.hair.length);
+    selected.eyes = Math.floor(Math.random()*assets.eyes.length);
+    selected.top = Math.floor(Math.random()*assets.top.length);
+    selected.pants = Math.floor(Math.random()*assets.pants.length);
+    selected.accessories = Math.floor(Math.random()*assets.accessories.length);
+    drawCharacter();
+    updateHighlights();
+  });
+
+  // Grid toggle
+  let showGrid = true;
+  document.getElementById('gridToggle').addEventListener('change', function(){
+    showGrid = this.checked;
+    drawCharacter();
+  });
+
+  // Generate option buttons dynamically
+  function generateOptions(layer) {
+    const row = document.getElementById(layer + "Row");
+    row.innerHTML = "";
+    assets[layer].forEach((_, index) => {
+      const btn = document.createElement("div");
+      btn.classList.add("option-btn");
+      btn.onclick = () => selectOption(layer, index);
+      row.appendChild(btn);
+    });
+  }
+
+  // Draw character
+  function drawCharacter(){
+    const canvas = document.getElementById('pixelCanvas');
+    const ctx = canvas.getContext('2d');
+    canvas.width = canvasSize*16;
+    canvas.height = canvasSize*16;
+    ctx.clearRect(0,0,canvas.width,canvas.height);
+
+    // Draw grid if enabled
+    if(showGrid){
+      ctx.strokeStyle = "rgba(0,0,0,0.2)";
+      ctx.lineWidth = 1;
+      const pixelSize = canvas.width / canvasSize;
+      for(let i=0;i<=canvasSize;i++){
+        ctx.beginPath();
+        ctx.moveTo(i*pixelSize,0);
+        ctx.lineTo(i*pixelSize,canvas.height);
+        ctx.stroke();
+      }
+      for(let j=0;j<=canvasSize;j++){
+        ctx.beginPath();
+        ctx.moveTo(0,j*pixelSize);
+        ctx.lineTo(canvas.width,j*pixelSize);
+        ctx.stroke();
+      }
+    }
+
+    // Draw body
+    const bodyImg = new Image();
+    bodyImg.src = assets.body[selected.body];
+    bodyImg.onload = ()=>{
+      ctx.drawImage(bodyImg,0,0,canvas.width,canvas.height);
+
+      // Draw other layers
+      ['hair','eyes','top','pants','accessories'].forEach(layer=>{
+        const img = new Image();
+        img.src = assets[layer][selected[layer]];
+        img.onload = ()=>{ctx.drawImage(img,0,0,canvas.width,canvas.height);}
+      });
+    };
+
+    updateHighlights();
+  }
+
+  // Download
+  function downloadCharacter(){
+    const canvas = document.getElementById('pixelCanvas');
+    const link = document.createElement('a');
+    link.download = 'pixgen_character.png';
+    link.href = canvas.toDataURL();
+    link.click();
+  }
+
+  // Initialize
+  window.onload = function(){
+    generateOptions("hair");
+    generateOptions("eyes");
+    generateOptions("top");
+    generateOptions("pants");
+    generateOptions("accessories");
+    drawCharacter();
+  }
+</script>
+</body>
+</html>
