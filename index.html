@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>PIXGEN v2.4 - Step Flow</title>
+  <title>PIXGEN v2.5 - Step Flow</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link href="https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@700&display=swap" rel="stylesheet">
   <style>
@@ -25,17 +25,8 @@
       letter-spacing: 2px;
     }
 
-    .step {
-      width: 100%;
-      display: none;
-      flex-direction: column;
-      align-items: center;
-      margin-bottom: 20px;
-    }
-
-    .step.active {
-      display: flex;
-    }
+    .step { width: 100%; display: none; flex-direction: column; align-items: center; margin-bottom: 20px; }
+    .step.active { display: flex; }
 
     select, button {
       margin: 10px;
@@ -57,45 +48,11 @@
       position: relative;
     }
 
-    canvas {
-      width: 100%;
-      height: 100%;
-      image-rendering: pixelated;
-    }
+    canvas { width: 100%; height: 100%; image-rendering: pixelated; }
 
-    .menu-row {
-      display: flex;
-      align-items: center;
-      margin: 5px 0;
-    }
+    .menu-row { display: flex; align-items: center; margin: 5px 0; }
 
-    .menu-row label {
-      width: 80px;
-      font-weight: 900;
-      font-size: 1em;
-      margin-right: 5px;
-    }
-
-    .menu-row .option-btn {
-      min-width: 50px;
-      height: 50px;
-      background: white;
-      border: 3px solid black;
-      flex-shrink: 0;
-      cursor: pointer;
-      scroll-snap-align: start;
-
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-
-    .menu-row .option-btn img {
-      width: 80%;
-      height: 80%;
-      object-fit: contain;
-      image-rendering: pixelated;
-    }
+    .menu-row label { width: 80px; font-weight: 900; font-size: 1em; margin-right: 5px; }
 
     .options-container {
       display: flex;
@@ -104,6 +61,31 @@
       padding: 5px;
       scroll-behavior: smooth;
       scroll-snap-type: x mandatory;
+    }
+
+    .option-btn {
+      min-width: 50px;
+      height: 50px;
+      background: white;
+      border: 3px solid black;
+      flex-shrink: 0;
+      cursor: pointer;
+      scroll-snap-align: start;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .option-btn img {
+      width: 80%;
+      height: 80%;
+      object-fit: contain;
+      image-rendering: pixelated;
+    }
+
+    .option-btn.selected {
+      border: 3px solid #00ffff;
+      box-shadow: 0 0 10px #00ffff;
     }
 
     .scroll-btn {
@@ -125,29 +107,13 @@
       padding-bottom: 20px;
     }
 
-    button#drawBtn, button#downloadBtn, button#randomizeBtn {
-      background: #00ffff;
-      color: black;
-    }
+    button#drawBtn, button#downloadBtn, button#randomizeBtn { background: #00ffff; color: black; }
 
     @media (max-width: 400px) {
-      #canvasContainer {
-        width: 90vw;
-        height: 90vw;
-      }
-      .menu-row label {
-        width: 60px;
-        font-size: 0.9em;
-      }
-      .menu-row .option-btn {
-        width: 30px;
-        height: 30px;
-      }
-      .scroll-btn {
-        height: 30px;
-        width: 30px;
-        font-size: 0.9em;
-      }
+      #canvasContainer { width: 90vw; height: 90vw; }
+      .menu-row label { width: 60px; font-size: 0.9em; }
+      .option-btn { width: 30px; height: 30px; }
+      .scroll-btn { height: 30px; width: 30px; font-size: 0.9em; }
     }
   </style>
 </head>
@@ -189,12 +155,9 @@
 
   <div id="customizationMenu">
 
-    <!-- RANDOMIZE Button and Grid Toggle -->
     <div style="margin:10px;">
       <button id="randomizeBtn">RANDOMIZE</button>
-      <label style="margin-left:10px;">
-        <input type="checkbox" id="gridToggle" checked> Show Grid
-      </label>
+      <label style="margin-left:10px;"><input type="checkbox" id="gridToggle" checked> Show Grid</label>
     </div>
 
     <!-- HAIR -->
@@ -238,76 +201,78 @@
     </div>
 
   </div>
+
+  <button id="drawBtn" onclick="drawCharacter()">DRAW CHARACTER</button>
+  <button id="downloadBtn" onclick="downloadCharacter()">DOWNLOAD</button>
+
 </div>
 
 <script>
-  // Example assets structure
+  // Example assets
   const assets = {
-    hair: ["assets/hair1.png","assets/hair2.png","assets/hair3.png","assets/hair4.png","assets/hair5.png"],
-    eyes: ["assets/eyes1.png","assets/eyes2.png","assets/eyes3.png","assets/eyes4.png","assets/eyes5.png"],
+    hair: ["assets/hair1.png","assets/hair2.png","assets/hair3.png","assets/hair4.png","assets/hair5.png","assets/hair6.png","assets/hair7.png","assets/hair8.png"],
+    eyes: ["assets/eyes1.png","assets/eyes2.png","assets/eyes3.png","assets/eyes4.png","assets/eyes5.png","assets/eyes6.png","assets/eyes7.png"],
     top: ["assets/top1.png","assets/top2.png","assets/top3.png"],
     pants: ["assets/pants1.png","assets/pants2.png"],
     accessories: ["assets/acc1.png","assets/acc2.png","assets/acc3.png"]
   };
 
-  let selected = {
-    hair: 0,
-    eyes: 0,
-    top: 0,
-    pants: 0,
-    accessories: 0
-  };
+  let selected = { hair:0, eyes:0, top:0, pants:0, accessories:0 };
 
-  function nextStep(step) {
+  function nextStep(step){
     document.getElementById('step'+step).classList.remove('active');
     document.getElementById('step'+(step+1)).classList.add('active');
   }
 
-  function selectOption(layer, index) {
+  function selectOption(layer,index){
     selected[layer] = index;
+    const row = document.getElementById(layer + "Row");
+    row.querySelectorAll('.option-btn').forEach(btn=>btn.classList.remove('selected'));
+    if(row.children[index]) row.children[index].classList.add('selected');
     drawCharacter();
   }
 
-  function drawCharacter() {
+  function drawCharacter(){
     const canvas = document.getElementById('pixelCanvas');
     const ctx = canvas.getContext('2d');
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-    // Example: Draw selected assets
-    Object.keys(selected).forEach(layer => {
+    ctx.clearRect(0,0,canvas.width,canvas.height);
+    Object.keys(selected).forEach(layer=>{
       const img = new Image();
       img.src = assets[layer][selected[layer]];
-      img.onload = () => ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+      img.onload = ()=>ctx.drawImage(img,0,0,canvas.width,canvas.height);
     });
   }
 
-  function generateOptions(layer) {
+  function downloadCharacter(){
+    const canvas = document.getElementById('pixelCanvas');
+    const link = document.createElement('a');
+    link.download = 'pixgen_character.png';
+    link.href = canvas.toDataURL();
+    link.click();
+  }
+
+  function generateOptions(layer){
     const row = document.getElementById(layer + "Row");
     row.innerHTML = "";
-
-    assets[layer].forEach((src, index) => {
+    assets[layer].forEach((src,index)=>{
       const btn = document.createElement("div");
       btn.classList.add("option-btn");
-      btn.onclick = () => selectOption(layer, index);
-
+      btn.onclick = ()=>selectOption(layer,index);
       const img = document.createElement("img");
       img.src = src;
-
       btn.appendChild(img);
       row.appendChild(btn);
     });
   }
 
-  function scrollLeft(id) {
-    const container = document.getElementById(id);
-    container.scrollBy({ left: -120, behavior: "smooth" });
+  function scrollLeft(id){
+    document.getElementById(id).scrollBy({ left:-120, behavior:"smooth" });
+  }
+  function scrollRight(id){
+    document.getElementById(id).scrollBy({ left:120, behavior:"smooth" });
   }
 
-  function scrollRight(id) {
-    const container = document.getElementById(id);
-    container.scrollBy({ left: 120, behavior: "smooth" });
-  }
-
-  window.onload = function () {
+  window.onload = function(){
     generateOptions("hair");
     generateOptions("eyes");
     generateOptions("top");
