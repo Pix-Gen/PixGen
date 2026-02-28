@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>PIXGEN v2.5 - Step Flow</title>
+  <title>PIXGEN v2.7 - Step Flow</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link href="https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@700&display=swap" rel="stylesheet">
   <style>
@@ -156,7 +156,7 @@
   <div id="customizationMenu">
 
     <div style="margin:10px;">
-      <button id="randomizeBtn">RANDOMIZE</button>
+      <button id="randomizeBtn" onclick="randomizeCharacter()">RANDOMIZE</button>
       <label style="margin-left:10px;"><input type="checkbox" id="gridToggle" checked> Show Grid</label>
     </div>
 
@@ -208,7 +208,7 @@
 </div>
 
 <script>
-  // Example assets
+  // Example assets (replace with your images)
   const assets = {
     hair: ["assets/hair1.png","assets/hair2.png","assets/hair3.png","assets/hair4.png","assets/hair5.png","assets/hair6.png","assets/hair7.png","assets/hair8.png"],
     eyes: ["assets/eyes1.png","assets/eyes2.png","assets/eyes3.png","assets/eyes4.png","assets/eyes5.png","assets/eyes6.png","assets/eyes7.png"],
@@ -224,11 +224,24 @@
     document.getElementById('step'+(step+1)).classList.add('active');
   }
 
+  function updateRowHighlight(layer){
+    const row = document.getElementById(layer + "Row");
+    row.querySelectorAll('.option-btn').forEach((btn,i)=>{
+      btn.classList.toggle('selected', i === selected[layer]);
+    });
+  }
+
   function selectOption(layer,index){
     selected[layer] = index;
-    const row = document.getElementById(layer + "Row");
-    row.querySelectorAll('.option-btn').forEach(btn=>btn.classList.remove('selected'));
-    if(row.children[index]) row.children[index].classList.add('selected');
+    updateRowHighlight(layer);
+    drawCharacter();
+  }
+
+  function randomizeCharacter(){
+    Object.keys(assets).forEach(layer=>{
+      selected[layer] = Math.floor(Math.random()*assets[layer].length);
+      updateRowHighlight(layer);
+    });
     drawCharacter();
   }
 
@@ -237,9 +250,12 @@
     const ctx = canvas.getContext('2d');
     ctx.clearRect(0,0,canvas.width,canvas.height);
     Object.keys(selected).forEach(layer=>{
-      const img = new Image();
-      img.src = assets[layer][selected[layer]];
-      img.onload = ()=>ctx.drawImage(img,0,0,canvas.width,canvas.height);
+      const imgIndex = selected[layer];
+      if(assets[layer][imgIndex]){
+        const img = new Image();
+        img.src = assets[layer][imgIndex];
+        img.onload = ()=>ctx.drawImage(img,0,0,canvas.width,canvas.height);
+      }
     });
   }
 
@@ -254,23 +270,24 @@
   function generateOptions(layer){
     const row = document.getElementById(layer + "Row");
     row.innerHTML = "";
-    assets[layer].forEach((src,index)=>{
-      const btn = document.createElement("div");
-      btn.classList.add("option-btn");
-      btn.onclick = ()=>selectOption(layer,index);
-      const img = document.createElement("img");
-      img.src = src;
-      btn.appendChild(img);
+    const minBoxes = 7; // always show 7 boxes
+    const total = Math.max(assets[layer].length, minBoxes);
+
+    for(let i=0;i<total;i++){
+      const btn = document.createElement('div');
+      btn.classList.add('option-btn');
+      if(i<assets[layer].length){
+        const img = document.createElement('img');
+        img.src = assets[layer][i];
+        btn.appendChild(img);
+      }
+      btn.onclick = ()=>selectOption(layer,i);
       row.appendChild(btn);
-    });
+    }
   }
 
-  function scrollLeft(id){
-    document.getElementById(id).scrollBy({ left:-120, behavior:"smooth" });
-  }
-  function scrollRight(id){
-    document.getElementById(id).scrollBy({ left:120, behavior:"smooth" });
-  }
+  function scrollLeft(id){ document.getElementById(id).scrollBy({ left:-120, behavior:"smooth" }); }
+  function scrollRight(id){ document.getElementById(id).scrollBy({ left:120, behavior:"smooth" }); }
 
   window.onload = function(){
     generateOptions("hair");
@@ -278,8 +295,10 @@
     generateOptions("top");
     generateOptions("pants");
     generateOptions("accessories");
+    Object.keys(selected).forEach(layer=>updateRowHighlight(layer));
     drawCharacter();
   };
 </script>
+
 </body>
 </html>
