@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>PIXGEN v2.8</title>
+  <title>PIXGEN v2.3 - Step Flow</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link href="https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@700&display=swap" rel="stylesheet">
   <style>
@@ -25,8 +25,17 @@
       letter-spacing: 2px;
     }
 
-    .step { width: 100%; display: none; flex-direction: column; align-items: center; margin-bottom: 20px; }
-    .step.active { display: flex; }
+    .step {
+      width: 100%;
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      margin-bottom: 20px;
+    }
+
+    .step.active {
+      display: flex;
+    }
 
     select, button {
       margin: 10px;
@@ -48,54 +57,33 @@
       position: relative;
     }
 
-    canvas { width: 100%; height: 100%; image-rendering: pixelated; }
-
-    .menu-row { display: flex; align-items: center; margin: 5px 0; }
-
-    .menu-row label { width: 80px; font-weight: 900; font-size: 1em; margin-right: 5px; }
-
-    .options-container {
-      display: flex;
-      overflow-x: auto;
-      gap: 8px;
-      padding: 5px;
-      scroll-behavior: smooth;
-      scroll-snap-type: x mandatory;
-    }
-
-    .option-btn {
-      min-width: 50px;
-      height: 50px;
-      background: white;
-      border: 3px solid black;
-      flex-shrink: 0;
-      cursor: pointer;
-      scroll-snap-align: start;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-
-    .option-btn img {
-      width: 80%;
-      height: 80%;
-      object-fit: contain;
+    canvas {
+      width: 100%;
+      height: 100%;
       image-rendering: pixelated;
     }
 
-    .option-btn.selected {
-      border: 3px solid #00ffff;
-      box-shadow: 0 0 10px #00ffff;
+    .menu-row {
+      display: flex;
+      align-items: center;
+      margin: 5px 0;
     }
 
-    .scroll-btn {
-      background: #00ffff;
+    .menu-row label {
+      width: 80px;
+      font-weight: 900;
+      font-size: 1em;
+      margin-right: 5px;
+    }
+
+    .menu-row .option-btn {
+      width: 35px;
+      height: 35px;
+      background: white;
       border: 3px solid black;
-      font-weight: bold;
+      margin: 0 2px;
       cursor: pointer;
-      height: 50px;
-      width: 40px;
-      margin: 0 3px;
+      flex-shrink: 0;
     }
 
     #customizationMenu {
@@ -107,13 +95,24 @@
       padding-bottom: 20px;
     }
 
-    button#drawBtn, button#downloadBtn, button#randomizeBtn { background: #00ffff; color: black; }
+    button#drawBtn, button#downloadBtn, button#randomizeBtn {
+      background: #00ffff;
+      color: black;
+    }
 
     @media (max-width: 400px) {
-      #canvasContainer { width: 90vw; height: 90vw; }
-      .menu-row label { width: 60px; font-size: 0.9em; }
-      .option-btn { width: 30px; height: 30px; }
-      .scroll-btn { height: 30px; width: 30px; font-size: 0.9em; }
+      #canvasContainer {
+        width: 90vw;
+        height: 90vw;
+      }
+      .menu-row label {
+        width: 60px;
+        font-size: 0.9em;
+      }
+      .menu-row .option-btn {
+        width: 30px;
+        height: 30px;
+      }
     }
   </style>
 </head>
@@ -121,6 +120,7 @@
 
 <h1>PIXGEN</h1>
 
+<!-- Step 1: Canvas Size -->
 <div class="step active" id="step1">
   <h2>Select Canvas Size</h2>
   <select id="canvasSizeSelect">
@@ -134,6 +134,7 @@
   <button onclick="nextStep(1)">Next</button>
 </div>
 
+<!-- Step 2: Body Type -->
 <div class="step" id="step2">
   <h2>Select Body Type</h2>
   <select id="bodySelect">
@@ -145,6 +146,7 @@
   <button onclick="nextStep(2)">Next</button>
 </div>
 
+<!-- Step 3: Customization -->
 <div class="step" id="step3">
   <div id="canvasContainer">
     <canvas id="pixelCanvas" width="256" height="256"></canvas>
@@ -152,158 +154,42 @@
 
   <div id="customizationMenu">
 
+    <!-- RANDOMIZE Button and Grid Toggle -->
     <div style="margin:10px;">
-      <button id="randomizeBtn" onclick="randomizeCharacter()">RANDOMIZE</button>
-      <label style="margin-left:10px;"><input type="checkbox" id="gridToggle" checked> Show Grid</label>
+      <button id="randomizeBtn">RANDOMIZE</button>
+      <label style="margin-left:10px;">
+        <input type="checkbox" id="gridToggle" checked> Show Grid
+      </label>
     </div>
 
     <!-- HAIR -->
-    <div class="menu-row">
+    <div class="menu-row" id="hairRow">
       <label>HAIR</label>
-      <button class="scroll-btn" onclick="scrollLeft('hairRow')">◀</button>
-      <div class="options-container" id="hairRow"></div>
-      <button class="scroll-btn" onclick="scrollRight('hairRow')">▶</button>
+      <div class="option-btn" onclick="selectOption('hair',0)"></div>
+      <div class="option-btn" onclick="selectOption('hair',1)"></div>
+      <div class="option-btn" onclick="selectOption('hair',2)"></div>
+      <div class="option-btn" onclick="selectOption('hair',3)"></div>
+      <div class="option-btn" onclick="selectOption('hair',4)"></div>
+      <div class="option-btn" onclick="selectOption('hair',5)"></div>
+      <div class="option-btn" onclick="selectOption('hair',6)"></div>
     </div>
 
     <!-- EYES -->
-    <div class="menu-row">
+    <div class="menu-row" id="eyesRow">
       <label>EYES</label>
-      <button class="scroll-btn" onclick="scrollLeft('eyesRow')">◀</button>
-      <div class="options-container" id="eyesRow"></div>
-      <button class="scroll-btn" onclick="scrollRight('eyesRow')">▶</button>
+      <div class="option-btn" onclick="selectOption('eyes',0)"></div>
+      <div class="option-btn" onclick="selectOption('eyes',1)"></div>
+      <div class="option-btn" onclick="selectOption('eyes',2)"></div>
+      <div class="option-btn" onclick="selectOption('eyes',3)"></div>
+      <div class="option-btn" onclick="selectOption('eyes',4)"></div>
+      <div class="option-btn" onclick="selectOption('eyes',5)"></div>
+      <div class="option-btn" onclick="selectOption('eyes',6)"></div>
     </div>
 
     <!-- TOP -->
-    <div class="menu-row">
+    <div class="menu-row" id="topRow">
       <label>TOP</label>
-      <button class="scroll-btn" onclick="scrollLeft('topRow')">◀</button>
-      <div class="options-container" id="topRow"></div>
-      <button class="scroll-btn" onclick="scrollRight('topRow')">▶</button>
-    </div>
-
-    <!-- PANTS -->
-    <div class="menu-row">
-      <label>PANTS</label>
-      <button class="scroll-btn" onclick="scrollLeft('pantsRow')">◀</button>
-      <div class="options-container" id="pantsRow"></div>
-      <button class="scroll-btn" onclick="scrollRight('pantsRow')">▶</button>
-    </div>
-
-    <!-- ETC -->
-    <div class="menu-row">
-      <label>ETC</label>
-      <button class="scroll-btn" onclick="scrollLeft('accessoriesRow')">◀</button>
-      <div class="options-container" id="accessoriesRow"></div>
-      <button class="scroll-btn" onclick="scrollRight('accessoriesRow')">▶</button>
-    </div>
-
-  </div>
-
-  <button id="drawBtn" onclick="drawCharacter()">DRAW CHARACTER</button>
-  <button id="downloadBtn" onclick="downloadCharacter()">DOWNLOAD</button>
-</div>
-
-<script>
-  // Assets
-  const assets = {
-    hair:["assets/hair1.png","assets/hair2.png","assets/hair3.png","assets/hair4.png","assets/hair5.png","assets/hair6.png","assets/hair7.png","assets/hair8.png"],
-    eyes:["assets/eyes1.png","assets/eyes2.png","assets/eyes3.png","assets/eyes4.png","assets/eyes5.png","assets/eyes6.png","assets/eyes7.png"],
-    top:["assets/top1.png","assets/top2.png","assets/top3.png"],
-    pants:["assets/pants1.png","assets/pants2.png"],
-    accessories:["assets/acc1.png","assets/acc2.png","assets/acc3.png"]
-  };
-
-  let selected = { hair:0, eyes:0, top:0, pants:0, accessories:0 };
-
-  function nextStep(step){
-    document.getElementById('step'+step).classList.remove('active');
-    document.getElementById('step'+(step+1)).classList.add('active');
-  }
-
-  function updateRowHighlight(layer){
-    const row = document.getElementById(layer+"Row");
-    row.querySelectorAll('.option-btn').forEach((btn,i)=>{
-      btn.classList.toggle('selected', i===selected[layer]);
-    });
-  }
-
-  function selectOption(layer,index){
-    selected[layer]=index;
-    updateRowHighlight(layer);
-    drawCharacter();
-  }
-
-  function randomizeCharacter(){
-    Object.keys(assets).forEach(layer=>{
-      selected[layer]=Math.floor(Math.random()*assets[layer].length);
-      updateRowHighlight(layer);
-    });
-    drawCharacter();
-  }
-
-  function generateOptions(layer){
-    const row = document.getElementById(layer+"Row");
-    row.innerHTML="";
-    const minBoxes=7;
-    const total=Math.max(assets[layer].length,minBoxes);
-    for(let i=0;i<total;i++){
-      const btn=document.createElement('div');
-      btn.classList.add('option-btn');
-      if(i<assets[layer].length){
-        const img=document.createElement('img');
-        img.src=assets[layer][i];
-        btn.appendChild(img);
-      }
-      btn.onclick=()=>selectOption(layer,i);
-      row.appendChild(btn);
-    }
-  }
-
-  function scrollLeft(id){document.getElementById(id).scrollBy({left:-120,behavior:"smooth"});}
-  function scrollRight(id){document.getElementById(id).scrollBy({left:120,behavior:"smooth"});}
-
-  function drawCharacter(){
-    const canvas=document.getElementById('pixelCanvas');
-    const ctx=canvas.getContext('2d');
-    ctx.clearRect(0,0,canvas.width,canvas.height);
-
-    // Draw grid if checked
-    const size=parseInt(document.getElementById('canvasSizeSelect').value);
-    if(document.getElementById('gridToggle').checked){
-      ctx.strokeStyle='rgba(0,255,255,0.3)';
-      for(let x=0;x<=canvas.width;x+=canvas.width/size){
-        ctx.beginPath(); ctx.moveTo(x,0); ctx.lineTo(x,canvas.height); ctx.stroke();
-      }
-      for(let y=0;y<=canvas.height;y+=canvas.height/size){
-        ctx.beginPath(); ctx.moveTo(0,y); ctx.lineTo(canvas.width,y); ctx.stroke();
-      }
-    }
-
-    // Draw layers
-    Object.keys(selected).forEach(layer=>{
-      const imgIndex=selected[layer];
-      if(assets[layer][imgIndex]){
-        const img=new Image();
-        img.src=assets[layer][imgIndex];
-        img.onload=()=>ctx.drawImage(img,0,0,canvas.width,canvas.height);
-      }
-    });
-  }
-
-  function downloadCharacter(){
-    const canvas=document.getElementById('pixelCanvas');
-    const link=document.createElement('a');
-    link.download='pixgen_character.png';
-    link.href=canvas.toDataURL();
-    link.click();
-  }
-
-  window.onload=function(){
-    Object.keys(assets).forEach(layer=>generateOptions(layer));
-    Object.keys(selected).forEach(layer=>updateRowHighlight(layer));
-    drawCharacter();
-  };
-</script>
-
-</body>
-</html>
+      <div class="option-btn" onclick="selectOption('top',0)"></div>
+      <div class="option-btn" onclick="selectOption('top',1)"></div>
+      <div class="option-btn" onclick="selectOption('top',2)"></div>
+      <div class="
