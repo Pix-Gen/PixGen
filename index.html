@@ -297,7 +297,7 @@
     drawCharacter();
   });
 
-  // Draw character
+  // Draw character - fixed for ETC
   function drawCharacter(){
     const canvas = document.getElementById('pixelCanvas');
     const ctx = canvas.getContext('2d');
@@ -324,21 +324,20 @@
       }
     }
 
-    // Draw body
-    const bodyImg = new Image();
-    bodyImg.src = assets.body[selected.body];
-    bodyImg.onload = ()=>{
-      ctx.drawImage(bodyImg,0,0,canvas.width,canvas.height);
-
-      // Draw other layers
-      ['hair','eyes','top','pants','accessories'].forEach(layer=>{
-        const img = new Image();
-        img.src = assets[layer][selected[layer]];
-        img.onload = ()=>{ctx.drawImage(img,0,0,canvas.width,canvas.height);}
-      });
-    };
-
-    updateHighlights();
+    // Draw all layers in sequence
+    const layers = ['body','hair','eyes','top','pants','accessories'];
+    let loadedCount = 0;
+    layers.forEach(layer=>{
+      const img = new Image();
+      img.src = layer==='body' ? assets.body[selected.body] : assets[layer][selected[layer]];
+      img.onload = ()=>{
+        ctx.drawImage(img,0,0,canvas.width,canvas.height);
+        loadedCount++;
+        if(loadedCount === layers.length){
+          updateHighlights(); // update glow after all layers drawn
+        }
+      };
+    });
   }
 
   // Download
