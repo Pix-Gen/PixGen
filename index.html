@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>PIXGEN v2.1 - Step Flow</title>
+  <title>PIXGEN v2.2 - Step Flow</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link href="https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@700&display=swap" rel="stylesheet">
   <style>
@@ -44,14 +44,17 @@
       font-size: 1em;
       cursor: pointer;
       border: 3px solid black;
+      background: white;
+      color: black;
     }
 
     #canvasContainer {
-      background: white;
+      background: transparent; /* transparent background */
       border: 6px solid black;
       width: 300px;
       height: 300px;
       margin: 20px 0;
+      position: relative;
     }
 
     canvas {
@@ -90,6 +93,11 @@
       width: 100%;
       max-width: 360px;
       padding-bottom: 20px;
+    }
+
+    button#drawBtn, button#downloadBtn {
+      background: #00ffff;
+      color: black;
     }
 
     @media (max-width: 400px) {
@@ -213,17 +221,13 @@
     document.getElementById('step'+currentStep).classList.add('active');
   }
 
-  // Selected indices
-  const selected = {
-    hair: 0, eyes: 0, top: 0, pants: 0, accessories: 0, body: 0
-  };
-
-  // Store canvas size
   let canvasSize = parseInt(document.getElementById('canvasSizeSelect').value);
-
   document.getElementById('canvasSizeSelect').addEventListener('change', function(){
     canvasSize = parseInt(this.value);
+    drawCharacter();
   });
+
+  const selected = {hair:0, eyes:0, top:0, pants:0, accessories:0, body:0};
 
   const assets = {
     body: ['assets/body/body1.png','assets/body/body2.png','assets/body/body3.png'],
@@ -242,22 +246,38 @@
   function drawCharacter(){
     const canvas = document.getElementById('pixelCanvas');
     const ctx = canvas.getContext('2d');
-    canvas.width = canvasSize * 16;
-    canvas.height = canvasSize * 16;
+    canvas.width = canvasSize*16;
+    canvas.height = canvasSize*16;
     ctx.clearRect(0,0,canvas.width,canvas.height);
 
-    // Draw body first
-    let img = new Image();
-    img.src = assets.body[selected.body];
-    img.onload = ()=>{
-      ctx.drawImage(img,0,0,canvas.width,canvas.height);
+    // Draw grid
+    ctx.strokeStyle = "rgba(0,0,0,0.2)";
+    ctx.lineWidth = 1;
+    const pixelSize = canvas.width / canvasSize;
+    for(let i=0;i<=canvasSize;i++){
+      ctx.beginPath();
+      ctx.moveTo(i*pixelSize,0);
+      ctx.lineTo(i*pixelSize,canvas.height);
+      ctx.stroke();
+    }
+    for(let j=0;j<=canvasSize;j++){
+      ctx.beginPath();
+      ctx.moveTo(0,j*pixelSize);
+      ctx.lineTo(canvas.width,j*pixelSize);
+      ctx.stroke();
+    }
+
+    // Draw body
+    const bodyImg = new Image();
+    bodyImg.src = assets.body[selected.body];
+    bodyImg.onload = ()=>{
+      ctx.drawImage(bodyImg,0,0,canvas.width,canvas.height);
 
       // Draw other layers
-      const layers = ['hair','eyes','top','pants','accessories'];
-      layers.forEach(layer=>{
-        let limg = new Image();
-        limg.src = assets[layer][selected[layer]];
-        limg.onload = ()=>{ctx.drawImage(limg,0,0,canvas.width,canvas.height);}
+      ['hair','eyes','top','pants','accessories'].forEach(layer=>{
+        const img = new Image();
+        img.src = assets[layer][selected[layer]];
+        img.onload = ()=>{ctx.drawImage(img,0,0,canvas.width,canvas.height);}
       });
     };
   }
@@ -270,9 +290,7 @@
     link.click();
   }
 
-  // Initial draw
   window.onload = drawCharacter;
 </script>
-
 </body>
 </html>
