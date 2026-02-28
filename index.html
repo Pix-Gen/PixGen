@@ -210,17 +210,17 @@
       <div class="option-btn" onclick="selectOption('pants',6)"></div>
     </div>
 
-    <!-- ETC / ACCESSORIES -->
-    <div class="menu-row" id="etcRow">
-      <label>ETC</label>
-      <div class="option-btn" onclick="selectOption('accessories',0)"></div>
-      <div class="option-btn" onclick="selectOption('accessories',1)"></div>
-      <div class="option-btn" onclick="selectOption('accessories',2)"></div>
-      <div class="option-btn" onclick="selectOption('accessories',3)"></div>
-      <div class="option-btn" onclick="selectOption('accessories',4)"></div>
-      <div class="option-btn" onclick="selectOption('accessories',5)"></div>
-      <div class="option-btn" onclick="selectOption('accessories',6)"></div>
-    </div>
+    <!-- ETC -->
+<div class="menu-row" id="accessoriesRow">
+  <label>ETC</label>
+  <div class="option-btn" onclick="selectOption('ETC',0)"></div>
+  <div class="option-btn" onclick="selectOption('ETC',1)"></div>
+  <div class="option-btn" onclick="selectOption('ETC',2)"></div>
+  <div class="option-btn" onclick="selectOption('ETC',3)"></div>
+  <div class="option-btn" onclick="selectOption('ETC',4)"></div>
+  <div class="option-btn" onclick="selectOption('ETC',5)"></div>
+  <div class="option-btn" onclick="selectOption('ETC',6)"></div>
+</div>
 
     <button id="downloadBtn" onclick="downloadCharacter()">DOWNLOAD</button>
   </div>
@@ -252,7 +252,7 @@
     eyes: ['assets/eyes/eyes1.png','assets/eyes/eyes2.png','assets/eyes/eyes3.png','assets/eyes/eyes4.png','assets/eyes/eyes5.png','assets/eyes/eyes6.png','assets/eyes/eyes7.png'],
     top: ['assets/top/top1.png','assets/top/top2.png','assets/top/top3.png','assets/top/top4.png','assets/top/top5.png','assets/top/top6.png','assets/top/top7.png'],
     pants: ['assets/pants/pants1.png','assets/pants/pants2.png','assets/pants/pants3.png','assets/pants/pants4.png','assets/pants/pants5.png','assets/pants/pants6.png','assets/pants/pants7.png'],
-    accessories: ['assets/accessories/acc1.png','assets/accessories/acc2.png','assets/accessories/acc3.png','assets/accessories/acc4.png','assets/accessories/acc5.png','assets/accessories/acc6.png','assets/accessories/acc7.png']
+    ETC: ['assets/ETC/acc1.png','assets/ETC/acc2.png','assets/ETC/acc3.png','assets/ETC/acc4.png','assets/ETC/acc5.png','assets/ETC/acc6.png','assets/ETC/acc7.png']
   };
 
   // Highlight selected
@@ -286,7 +286,7 @@
     selected.eyes = Math.floor(Math.random()*assets.eyes.length);
     selected.top = Math.floor(Math.random()*assets.top.length);
     selected.pants = Math.floor(Math.random()*assets.pants.length);
-    selected.accessories = Math.floor(Math.random()*assets.accessories.length);
+    selected.ETC = Math.floor(Math.random()*assets.ETC.length);
     drawCharacter();
     updateHighlights();
   });
