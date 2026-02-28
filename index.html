@@ -1,1 +1,56 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>PixGen</title>
+  <style>
+    body {
+      background: #111;
+      color: white;
+      text-align: center;
+      font-family: Arial;
+    }
 
+    canvas {
+      border: 2px solid white;
+      margin-top: 20px;
+      image-rendering: pixelated;
+    }
+
+    button {
+      margin-top: 20px;
+      padding: 10px 20px;
+      background: #00ffcc;
+      border: none;
+      cursor: pointer;
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>PixGen 🎨</h1>
+  <p>Create your pixel character now!</p>
+  <button onclick="generate()">Generate Pixel Art</button>
+
+  <br>
+  <canvas id="pixelCanvas" width="256" height="256"></canvas>
+
+  <script>
+    function generate() {
+      const canvas = document.getElementById("pixelCanvas");
+      const ctx = canvas.getContext("2d");
+
+      const size = 16;
+      const pixelSize = 16;
+
+      for (let x = 0; x < size; x++) {
+        for (let y = 0; y < size; y++) {
+          ctx.fillStyle = `hsl(${Math.random() * 360}, 70%, 50%)`;
+          ctx.fillRect(x * pixelSize, y * pixelSize, pixelSize, pixelSize);
+        }
+      }
+    }
+  </script>
+
+</body>
+</html>
