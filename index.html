@@ -1,12 +1,12 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>PIXGEN v2 - Character Creator</title>
+  <title>PIXGEN v2.1 - Step Flow</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link href="https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@700&display=swap" rel="stylesheet">
   <style>
     body {
-      background-color: #0b1d3a; /* Navy Blue */
+      background-color: #0b1d3a;
       color: white;
       font-family: 'Roboto Mono', monospace;
       margin: 0;
@@ -17,7 +17,7 @@
     }
 
     h1 {
-      color: #00ffff; /* Neon Cyan */
+      color: #00ffff;
       font-size: 3em;
       font-weight: 900;
       margin: 20px 0;
@@ -25,12 +25,33 @@
       letter-spacing: 2px;
     }
 
+    .step {
+      width: 100%;
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      margin-bottom: 20px;
+    }
+
+    .step.active {
+      display: flex;
+    }
+
+    select, button {
+      margin: 10px;
+      padding: 10px 20px;
+      font-weight: 900;
+      font-size: 1em;
+      cursor: pointer;
+      border: 3px solid black;
+    }
+
     #canvasContainer {
       background: white;
       border: 6px solid black;
       width: 300px;
       height: 300px;
-      margin-bottom: 20px;
+      margin: 20px 0;
     }
 
     canvas {
@@ -71,16 +92,6 @@
       padding-bottom: 20px;
     }
 
-    button#drawBtn, button#downloadBtn {
-      margin: 10px;
-      padding: 10px 20px;
-      background: #00ffff;
-      border: 3px solid black;
-      font-weight: 900;
-      font-size: 1em;
-      cursor: pointer;
-    }
-
     @media (max-width: 400px) {
       #canvasContainer {
         width: 90vw;
@@ -99,8 +110,36 @@
 </head>
 <body>
 
-  <h1>PIXGEN</h1>
+<h1>PIXGEN</h1>
 
+<!-- Step 1: Canvas Size -->
+<div class="step active" id="step1">
+  <h2>Select Canvas Size</h2>
+  <select id="canvasSizeSelect">
+    <option value="8">8 x 8</option>
+    <option value="16" selected>16 x 16</option>
+    <option value="32">32 x 32</option>
+    <option value="64">64 x 64</option>
+    <option value="128">128 x 128</option>
+  </select>
+  <br>
+  <button onclick="nextStep(1)">Next</button>
+</div>
+
+<!-- Step 2: Body Type -->
+<div class="step" id="step2">
+  <h2>Select Body Type</h2>
+  <select id="bodySelect">
+    <option value="0">Body 1</option>
+    <option value="1">Body 2</option>
+    <option value="2">Body 3</option>
+  </select>
+  <br>
+  <button onclick="nextStep(2)">Next</button>
+</div>
+
+<!-- Step 3: Customization -->
+<div class="step" id="step3">
   <div id="canvasContainer">
     <canvas id="pixelCanvas" width="256" height="256"></canvas>
   </div>
@@ -163,60 +202,77 @@
 
     <button id="drawBtn" onclick="drawCharacter()">DRAW CHARACTER</button>
     <button id="downloadBtn" onclick="downloadCharacter()">DOWNLOAD</button>
-
   </div>
+</div>
 
-  <script>
-    // Selected indices
-    const selected = {
-      hair: 0,
-      eyes: 0,
-      top: 0,
-      pants: 0,
-      accessories: 0
-    };
+<script>
+  let currentStep = 1;
+  function nextStep(step){
+    document.getElementById('step'+step).classList.remove('active');
+    currentStep = step+1;
+    document.getElementById('step'+currentStep).classList.add('active');
+  }
 
-    // Assets (replace with your actual paths)
-    const assets = {
-      hair: ['assets/hair/hair1.png','assets/hair/hair2.png','assets/hair/hair3.png','assets/hair/hair4.png','assets/hair/hair5.png','assets/hair/hair6.png','assets/hair/hair7.png'],
-      eyes: ['assets/eyes/eyes1.png','assets/eyes/eyes2.png','assets/eyes/eyes3.png','assets/eyes/eyes4.png','assets/eyes/eyes5.png','assets/eyes/eyes6.png','assets/eyes/eyes7.png'],
-      top: ['assets/top/top1.png','assets/top/top2.png','assets/top/top3.png','assets/top/top4.png','assets/top/top5.png','assets/top/top6.png','assets/top/top7.png'],
-      pants: ['assets/pants/pants1.png','assets/pants/pants2.png','assets/pants/pants3.png','assets/pants/pants4.png','assets/pants/pants5.png','assets/pants/pants6.png','assets/pants/pants7.png'],
-      accessories: ['assets/accessories/acc1.png','assets/accessories/acc2.png','assets/accessories/acc3.png','assets/accessories/acc4.png','assets/accessories/acc5.png','assets/accessories/acc6.png','assets/accessories/acc7.png']
-    };
+  // Selected indices
+  const selected = {
+    hair: 0, eyes: 0, top: 0, pants: 0, accessories: 0, body: 0
+  };
 
-    function selectOption(layer,index){
-      selected[layer] = index;
-      drawCharacter();
-    }
+  // Store canvas size
+  let canvasSize = parseInt(document.getElementById('canvasSizeSelect').value);
 
-    function drawCharacter(){
-      const canvas = document.getElementById('pixelCanvas');
-      const ctx = canvas.getContext('2d');
-      ctx.clearRect(0,0,canvas.width,canvas.height);
+  document.getElementById('canvasSizeSelect').addEventListener('change', function(){
+    canvasSize = parseInt(this.value);
+  });
 
-      // Draw layers in order: body assumed default 0
-      const order = ['hair','eyes','top','pants','accessories'];
-      order.forEach(layer=>{
-        const img = new Image();
-        img.src = assets[layer][selected[layer]];
-        img.onload = ()=>{
-          ctx.drawImage(img,0,0,canvas.width,canvas.height);
-        };
+  const assets = {
+    body: ['assets/body/body1.png','assets/body/body2.png','assets/body/body3.png'],
+    hair: ['assets/hair/hair1.png','assets/hair/hair2.png','assets/hair/hair3.png','assets/hair/hair4.png','assets/hair/hair5.png','assets/hair/hair6.png','assets/hair/hair7.png'],
+    eyes: ['assets/eyes/eyes1.png','assets/eyes/eyes2.png','assets/eyes/eyes3.png','assets/eyes/eyes4.png','assets/eyes/eyes5.png','assets/eyes/eyes6.png','assets/eyes/eyes7.png'],
+    top: ['assets/top/top1.png','assets/top/top2.png','assets/top/top3.png','assets/top/top4.png','assets/top/top5.png','assets/top/top6.png','assets/top/top7.png'],
+    pants: ['assets/pants/pants1.png','assets/pants/pants2.png','assets/pants/pants3.png','assets/pants/pants4.png','assets/pants/pants5.png','assets/pants/pants6.png','assets/pants/pants7.png'],
+    accessories: ['assets/accessories/acc1.png','assets/accessories/acc2.png','assets/accessories/acc3.png','assets/accessories/acc4.png','assets/accessories/acc5.png','assets/accessories/acc6.png','assets/accessories/acc7.png']
+  };
+
+  function selectOption(layer,index){
+    selected[layer] = index;
+    drawCharacter();
+  }
+
+  function drawCharacter(){
+    const canvas = document.getElementById('pixelCanvas');
+    const ctx = canvas.getContext('2d');
+    canvas.width = canvasSize * 16;
+    canvas.height = canvasSize * 16;
+    ctx.clearRect(0,0,canvas.width,canvas.height);
+
+    // Draw body first
+    let img = new Image();
+    img.src = assets.body[selected.body];
+    img.onload = ()=>{
+      ctx.drawImage(img,0,0,canvas.width,canvas.height);
+
+      // Draw other layers
+      const layers = ['hair','eyes','top','pants','accessories'];
+      layers.forEach(layer=>{
+        let limg = new Image();
+        limg.src = assets[layer][selected[layer]];
+        limg.onload = ()=>{ctx.drawImage(limg,0,0,canvas.width,canvas.height);}
       });
-    }
+    };
+  }
 
-    function downloadCharacter(){
-      const canvas = document.getElementById('pixelCanvas');
-      const link = document.createElement('a');
-      link.download = 'pixgen_character.png';
-      link.href = canvas.toDataURL();
-      link.click();
-    }
+  function downloadCharacter(){
+    const canvas = document.getElementById('pixelCanvas');
+    const link = document.createElement('a');
+    link.download = 'pixgen_character.png';
+    link.href = canvas.toDataURL();
+    link.click();
+  }
 
-    // Initial draw
-    window.onload = drawCharacter;
-  </script>
+  // Initial draw
+  window.onload = drawCharacter;
+</script>
 
 </body>
 </html>
