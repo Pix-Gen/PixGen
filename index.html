@@ -42,10 +42,10 @@
     <select id="eyesSelect"></select>
 
     <label>Pants:</label>
-    <select id="mouthSelect"></select>
+    <select id="pantsSelect"></select>
 
     <label>Top:</label>
-    <select id="clothesSelect"></select>
+    <select id="topSelect"></select>
   </div>
 
   <button onclick="drawCharacter()">Draw Character</button>
@@ -60,16 +60,16 @@
       body: ['assets/body/body1.png','assets/body/body2.png'],
       hair: ['assets/hair/hair1.png','assets/hair/hair2.png'],
       eyes: ['assets/eyes/eyes1.png','assets/eyes/eyes2.png'],
-      mouth: ['assets/mouth/mouth1.png','assets/mouth/mouth2.png'],
-      clothes: ['assets/clothes/clothes1.png','assets/clothes/clothes2.png']
+      pants: ['assets/pants/pants1.png','assets/pants/pants2.png'],
+      top: ['assets/top/top1.png','assets/top/top2.png']
     };
 
     const selects = {
       body: document.getElementById('bodySelect'),
       hair: document.getElementById('hairSelect'),
       eyes: document.getElementById('eyesSelect'),
-      mouth: document.getElementById('mouthSelect'),
-      clothes: document.getElementById('clothesSelect')
+      pants: document.getElementById('pantsSelect'),
+      top: document.getElementById('topSelect')
     };
 
     // Populate dropdowns
@@ -91,12 +91,12 @@
         body: selects.body.value,
         hair: selects.hair.value,
         eyes: selects.eyes.value,
-        mouth: selects.mouth.value,
-        clothes: selects.clothes.value
+        pants: selects.pants.value,
+        top: selects.top.value
       };
 
       // Load images in order
-      const layers = ['body','clothes','hair','eyes','mouth'];
+      const layers = ['body','top','hair','eyes','pants'];
       let loaded = 0;
 
       layers.forEach(layer => {
