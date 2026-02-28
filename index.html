@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>PixGen - Character Creator</title>
+  <title>PixGen v1.4 - Character Creator</title>
   <style>
     body {
       background: #111;
@@ -22,54 +22,83 @@
       font-weight: bold;
     }
 
-    #controls {
+    #controls div {
       margin-top: 20px;
     }
   </style>
 </head>
 <body>
 
-  <h1>PixGen Character Creator</h1>
+  <h1>PixGen </h1>
 
-  <div id="controls">
-    <label>Body:</label>
-    <select id="bodySelect"></select>
-
-    <label>Hair:</label>
-    <select id="hairSelect"></select>
-
-    <label>Eyes:</label>
-    <select id="eyesSelect"></select>
-
-    <label>Pants:</label>
-    <select id="pantsSelect"></select>
-
-    <label>Top:</label>
-    <select id="topSelect"></select>
+  <!-- Step 1: Canvas Size -->
+  <div id="step1">
+    <h2>Step 1: Select Canvas Size</h2>
+    <select id="canvasSizeSelect">
+      <option value="8">8 x 8</option>
+      <option value="16" selected>16 x 16</option>
+      <option value="32">32 x 32</option>
+      <option value="64">64 x 64</option>
+      <option value="128">128 x 128</option>
+    </select>
+    <br>
+    <button onclick="nextStep(1)">Next</button>
   </div>
 
-  <button onclick="drawCharacter()">Draw Character</button>
+  <!-- Step 2: Body Selection -->
+  <div id="step2" style="display:none;">
+    <h2>Step 2: Choose Body Type</h2>
+    <select id="bodySelect"></select>
+    <br>
+    <button onclick="nextStep(2)">Next</button>
+  </div>
+
+  <!-- Step 3: Customization -->
+  <div id="step3" style="display:none;">
+    <h2>Step 3: Customize Your Character</h2>
+    <label>Hair:</label>
+    <select id="hairSelect"></select>
+    <label>Eyes:</label>
+    <select id="eyesSelect"></select>
+    <label>Top:</label>
+    <select id="topSelect"></select>
+    <label>Pants:</label>
+    <select id="pantsSelect"></select>
+    <label>Accessories:</label>
+    <select id="accessoriesSelect"></select>
+    <br>
+    <button onclick="drawCharacter()">Draw Character</button>
+  </div>
+
+  <canvas id="pixelCanvas" width="256" height="256"></canvas>
+  <br>
   <button onclick="downloadCharacter()">Download PNG</button>
 
-  <br>
-  <canvas id="pixelCanvas" width="256" height="256"></canvas>
-
   <script>
-    // Layer image paths
+    // Function to move to the next step
+    function nextStep(currentStep) {
+      document.getElementById(`step${currentStep}`).style.display = "none";
+      document.getElementById(`step${currentStep+1}`).style.display = "block";
+    }
+
+    // Assets for each layer
     const assets = {
       body: ['assets/body/body1.png','assets/body/body2.png'],
+      pants: ['assets/pants/pants1.png','assets/pants/pants2.png'],
+      top: ['assets/top/top1.png','assets/top/top2.png'],
       hair: ['assets/hair/hair1.png','assets/hair/hair2.png'],
       eyes: ['assets/eyes/eyes1.png','assets/eyes/eyes2.png'],
-      pants: ['assets/pants/pants1.png','assets/pants/pants2.png'],
-      top: ['assets/top/top1.png','assets/top/top2.png']
+      accessories: ['assets/accessories/acc1.png','assets/accessories/acc2.png']
     };
 
+    // Select elements
     const selects = {
       body: document.getElementById('bodySelect'),
+      pants: document.getElementById('pantsSelect'),
+      top: document.getElementById('topSelect'),
       hair: document.getElementById('hairSelect'),
       eyes: document.getElementById('eyesSelect'),
-      pants: document.getElementById('pantsSelect'),
-      top: document.getElementById('topSelect')
+      accessories: document.getElementById('accessoriesSelect')
     };
 
     // Populate dropdowns
@@ -82,33 +111,37 @@
       });
     }
 
+    // Draw the character
     function drawCharacter() {
       const canvas = document.getElementById('pixelCanvas');
       const ctx = canvas.getContext('2d');
+
+      const size = parseInt(document.getElementById('canvasSizeSelect').value);
+      canvas.width = size * 16;
+      canvas.height = size * 16;
       ctx.clearRect(0,0,canvas.width,canvas.height);
 
       const selectedIndices = {
         body: selects.body.value,
+        pants: selects.pants.value,
+        top: selects.top.value,
         hair: selects.hair.value,
         eyes: selects.eyes.value,
-        pants: selects.pants.value,
-        top: selects.top.value
+        accessories: selects.accessories.value
       };
 
-      // Load images in order
-      const layers = ['body','top','hair','eyes','pants'];
-      let loaded = 0;
+      const layers = ['body','pants','top','hair','eyes','accessories'];
 
       layers.forEach(layer => {
         const img = new Image();
         img.src = assets[layer][selectedIndices[layer]];
         img.onload = () => {
-          ctx.drawImage(img,0,0,256,256);
-          loaded++;
+          ctx.drawImage(img,0,0,canvas.width,canvas.height);
         }
       });
     }
 
+    // Download canvas as PNG
     function downloadCharacter() {
       const canvas = document.getElementById('pixelCanvas');
       const link = document.createElement('a');
@@ -118,8 +151,9 @@
     }
 
     // Draw default character on load
-    window.onload = drawCharacter;
+    window.onload = function() {
+      drawCharacter();
+    };
   </script>
-
 </body>
 </html>
