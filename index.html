@@ -243,7 +243,7 @@
   });
 
   // Selected indices
-  const selected = {hair:0, eyes:0, top:0, pants:0, accessories:0, body:0};
+  const selected = {hair:0, eyes:0, top:0, pants:0, ETC:0, body:0};
 
   // Assets
   const assets = {
@@ -257,7 +257,7 @@
 
   // Highlight selected
   function updateHighlights() {
-    const layers = ['hair','eyes','top','pants','accessories'];
+    const layers = ['hair','eyes','top','pants','ETC'];
     layers.forEach(layer=>{
       const row = document.getElementById(layer+'Row');
       const buttons = row.getElementsByClassName('option-btn');
